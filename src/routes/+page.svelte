@@ -20,21 +20,40 @@
   
     // A hónap napjainak generálása
     function generateCalendar(year, month) {
-      let firstDay = new Date(year, month, 1).getDay();
-      firstDay = firstDay === 0 ? 6 : firstDay - 1; // Hétfő legyen az első nap
-      let daysInMonth = new Date(year, month + 1, 0).getDate();
-  
-      let calendarDays = [];
-      for (let i = 0; i < firstDay; i++) {
-        calendarDays.push(null); // Üres napok az első hét elején
-      }
-  
-      for (let day = 1; day <= daysInMonth; day++) {
-        calendarDays.push(day);
-      }
-  
-      return calendarDays;
-    }
+        let firstDay = new Date(year, month, 1).getDay(); // Az első nap hétindexe (0 = Vasárnap)
+        firstDay = firstDay === 0 ? 0 : firstDay; // Ha már vasárnappal kezdünk, akkor nincs eltolás
+        let daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let prevMonthDays = new Date(year, month, 0).getDate(); // Az előző hónap napjainak száma
+        let calendarDays = [];
+
+        // **Előző hónap napjai** (Ha szükséges az első sor kitöltéséhez)
+        for (let i = firstDay - 1; i >= 0; i--) {
+            calendarDays.push({
+            day: prevMonthDays - i,
+            isCurrentMonth: false,
+            });
+        }
+
+        // **Aktuális hónap napjai**
+        for (let day = 1; day <= daysInMonth; day++) {
+            calendarDays.push({
+            day: day,
+            isCurrentMonth: true,
+            });
+        }
+
+        // **Következő hónap napjai** (Kitöltjük a rácsot teljes 6 soros megjelenítésig)
+        while (calendarDays.length % 7 !== 0) {
+            calendarDays.push({
+            day: calendarDays.length % 7 + 1,
+            isCurrentMonth: false,
+            });
+        }
+
+        return calendarDays;
+        }
+
   
     // Hónapváltás funkció
     function changeMonth(direction) {
@@ -63,19 +82,19 @@
     <!-- Naptár megjelenítés -->
 <div class="calendar-container">
     <div class="calendar-grid">
-        {#each generateCalendar($currentYear, $currentMonth) as day, index}
-            <div class="day-box {day && (index % 7 === 5 || index % 7 === 6)} 
-                    {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
-                
-                <!-- A hónap első hetében az első sorba írjuk a napok neveit -->
-                {#if index < 7}
-                <div class="day-name">{daysOfWeek[index]}</div>
-                {/if}
-
-                <div class="day-number">{day ? day : ""}</div>
-            </div>
-        {/each}
-
+        {#each generateCalendar($currentYear, $currentMonth) as dayObj, index}
+        <div class="day-box 
+          {dayObj.isCurrentMonth ? '' : 'faded'} 
+          {dayObj.isToday ? 'today' : ''}">
+          
+          <!-- Ha az első héten vagyunk, kiírjuk a napok nevét -->
+          {#if index < 7}
+            <div class="day-name">{daysOfWeek[index]}</div>
+          {/if}
+      
+          <div class="day-number">{dayObj.day}</div>
+        </div>
+      {/each}      
     </div>
 </div>
   
@@ -128,6 +147,10 @@
         background-color: #0d6efd !important;
         color: white;
         font-weight: bold;
+    }
+    .faded {
+        opacity: 0.5;
+        color: #aaa;
     }
   </style>
   
