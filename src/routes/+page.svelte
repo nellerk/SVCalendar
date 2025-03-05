@@ -1,6 +1,8 @@
 <script>
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
+    import CalendarNav from "$lib/CalendarNav.svelte"; 
+
   
     // Az aktuális dátum tárolása
     let today = new Date();
@@ -49,6 +51,31 @@
       });
     }
   </script>
+
+    <!-- Navigációs sáv (Most már komponensként) -->
+    <CalendarNav 
+        {currentYear} 
+        {currentMonth} 
+        {monthNames} 
+        {changeMonth} 
+    />
+
+    <!-- Naptár megjelenítés -->
+    <div class="calendar-container">
+        <div class="calendar-grid mb-2">
+        {#each daysOfWeek as day}
+            <div class="day-header">{day}</div>
+        {/each}
+    </div>
+
+    <div class="calendar-grid">
+        {#each generateCalendar($currentYear, $currentMonth) as day}
+            <div class="day-box {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
+                {day ? day : ""}
+            </div>
+        {/each}
+    </div>
+</div>
   
   <style>
     .calendar-container {
@@ -83,30 +110,3 @@
       font-weight: bold;
     }
   </style>
-  
-  <!-- Navigációs sáv -->
-  <nav class="navbar navbar-light bg-light mb-3">
-    <div class="container d-flex justify-content-between">
-      <button class="btn btn-outline-primary" on:click={() => changeMonth(-1)}>&lt;</button>
-      <h3 class="m-0">{$currentYear} - {monthNames[$currentMonth]}</h3>
-      <button class="btn btn-outline-primary" on:click={() => changeMonth(1)}>&gt;</button>
-    </div>
-  </nav>
-  
-  <!-- Naptár megjelenítés -->
-  <div class="calendar-container">
-    <div class="calendar-grid mb-2">
-      {#each daysOfWeek as day}
-        <div class="day-header">{day}</div>
-      {/each}
-    </div>
-  
-    <div class="calendar-grid">
-      {#each generateCalendar($currentYear, $currentMonth) as day}
-        <div class="day-box {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
-          {day ? day : ""}
-        </div>
-      {/each}
-    </div>
-  </div>
-  
