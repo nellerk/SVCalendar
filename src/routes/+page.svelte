@@ -69,32 +69,38 @@
     </div>
 
     <div class="calendar-grid">
-        {#each generateCalendar($currentYear, $currentMonth) as day}
-            <div class="day-box {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
+        {#each generateCalendar($currentYear, $currentMonth) as day, index}
+            <div class="day-box {day && (index % 7 === 5 || index % 7 === 6) ? 'weekend' : ''} 
+                    {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
                 {day ? day : ""}
             </div>
         {/each}
     </div>
 </div>
   
-  <style>
+<style>
     .calendar-container {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
     }
   
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      gap: 2px; /* Kisebb távolság a napok között */
     }
   
     .day-box {
-      padding: 15px;
+      width: 100%; /* Teljes szélességet kitöltő elemek */
+      aspect-ratio: 1; /* Négyzet alakú cellák */
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: 1px solid #ddd;
       border-radius: 8px;
       text-align: center;
       font-size: 18px;
+      background-color: #ffffff;
     }
   
     .day-header {
@@ -102,6 +108,7 @@
       background: #f8f9fa;
       padding: 10px;
       border-radius: 5px;
+      text-align: center;
     }
   
     .today {
@@ -109,4 +116,10 @@
       color: white;
       font-weight: bold;
     }
+  
+    /* Szombat és Vasárnap kiemelése halványabb színnel */
+    .weekend {
+      background-color: #f0f0f0;
+    }
   </style>
+  
