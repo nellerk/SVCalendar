@@ -61,65 +61,74 @@
     />
 
     <!-- Naptár megjelenítés -->
-    <div class="calendar-container">
-        <div class="calendar-grid mb-2">
-        {#each daysOfWeek as day}
-            <div class="day-header">{day}</div>
-        {/each}
-    </div>
-
+<div class="calendar-container">
     <div class="calendar-grid">
         {#each generateCalendar($currentYear, $currentMonth) as day, index}
-            <div class="day-box {day && (index % 7 === 5 || index % 7 === 6) ? 'weekend' : ''} 
+            <div class="day-box {day && (index % 7 === 5 || index % 7 === 6)} 
                     {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
-                {day ? day : ""}
+                
+                <!-- A hónap első hetében az első sorba írjuk a napok neveit -->
+                {#if index < 7}
+                <div class="day-name">{daysOfWeek[index]}</div>
+                {/if}
+
+                <div class="day-number">{day ? day : ""}</div>
             </div>
         {/each}
+
     </div>
 </div>
   
 <style>
     .calendar-container {
-      max-width: 700px;
-      margin: auto;
+        margin: auto;
+        padding: 0 20px; /* Két oldali behúzás */
     }
   
     .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 2px; /* Kisebb távolság a napok között */
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
     }
   
     .day-box {
-      width: 100%; /* Teljes szélességet kitöltő elemek */
-      aspect-ratio: 1; /* Négyzet alakú cellák */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 18px;
-      background-color: #ffffff;
+        width: 100%;
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Felső sarokba helyezzük a tartalmat */
+        justify-content: flex-start;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        text-align: left;
+        font-size: 16px;
+        background-color: #ffffff;
+        position: relative;
     }
   
-    .day-header {
-      font-weight: bold;
-      background: #f8f9fa;
-      padding: 10px;
-      border-radius: 5px;
-      text-align: center;
+    .day-name {
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        position: absolute;
+        top: 5px;
+        left: 10px;
+    }
+  
+    .day-number {
+        font-size: 18px;
+        font-weight: normal;
+        position: absolute;
+        top: 25px;
+        left: 10px;
     }
   
     .today {
-      background-color: #0d6efd !important;
-      color: white;
-      font-weight: bold;
-    }
-  
-    /* Szombat és Vasárnap kiemelése halványabb színnel */
-    .weekend {
-      background-color: #f0f0f0;
+        background-color: #0d6efd !important;
+        color: white;
+        font-weight: bold;
     }
   </style>
+  
   
