@@ -7,8 +7,14 @@
     let currentMonth = writable(today.getMonth());
     let currentYear = writable(today.getFullYear());
   
+    // Hónapok nevei
+    const monthNames = [
+      "Január", "Február", "Március", "Április", "Május", "Június",
+      "Július", "Augusztus", "Szeptember", "Október", "November", "December"
+    ];
+  
     // Napok nevei
-    const daysOfWeek = ["Hé", "Ke", "Sze", "Csü", "Pé", "Szo", "Vas"];
+    const daysOfWeek = ["H", "K", "SZE", "CS", "P", "SZO", "V"];
   
     // A hónap napjainak generálása
     function generateCalendar(year, month) {
@@ -45,48 +51,62 @@
   </script>
   
   <style>
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      text-align: center;
-      max-width: 400px;
+    .calendar-container {
+      max-width: 600px;
       margin: auto;
     }
   
-    .day {
-      padding: 10px;
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+  
+    .day-box {
+      padding: 15px;
       border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 18px;
+    }
+  
+    .day-header {
+      font-weight: bold;
+      background: #f8f9fa;
+      padding: 10px;
       border-radius: 5px;
     }
   
-    .header {
+    .today {
+      background-color: #0d6efd !important;
+      color: white;
       font-weight: bold;
-      background: #f4f4f4;
-    }
-  
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
     }
   </style>
   
-  <!-- Navigáció a hónapok között -->
-  <div class="controls">
-    <button on:click={() => changeMonth(-1)}>◀ Előző</button>
-    <h2>{$currentYear} / {$currentMonth + 1}</h2>
-    <button on:click={() => changeMonth(1)}>Következő ▶</button>
-  </div>
+  <!-- Navigációs sáv -->
+  <nav class="navbar navbar-light bg-light mb-3">
+    <div class="container d-flex justify-content-between">
+      <button class="btn btn-outline-primary" on:click={() => changeMonth(-1)}>&lt;</button>
+      <h3 class="m-0">{$currentYear} - {monthNames[$currentMonth]}</h3>
+      <button class="btn btn-outline-primary" on:click={() => changeMonth(1)}>&gt;</button>
+    </div>
+  </nav>
   
   <!-- Naptár megjelenítés -->
-  <div class="calendar">
-    {#each daysOfWeek as day}
-      <div class="header">{day}</div>
-    {/each}
+  <div class="calendar-container">
+    <div class="calendar-grid mb-2">
+      {#each daysOfWeek as day}
+        <div class="day-header">{day}</div>
+      {/each}
+    </div>
   
-    {#each generateCalendar($currentYear, $currentMonth) as day}
-      <div class="day">{day ? day : ""}</div>
-    {/each}
+    <div class="calendar-grid">
+      {#each generateCalendar($currentYear, $currentMonth) as day}
+        <div class="day-box {day && day === today.getDate() && $currentMonth === today.getMonth() && $currentYear === today.getFullYear() ? 'today' : ''}">
+          {day ? day : ""}
+        </div>
+      {/each}
+    </div>
   </div>
   
