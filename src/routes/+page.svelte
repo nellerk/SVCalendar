@@ -16,43 +16,45 @@
     ];
   
     // Napok nevei
-    const daysOfWeek = ["H", "K", "SZE", "CS", "P", "SZO", "V"];
+    const daysOfWeek = ["V", "H", "K", "SZE", "CS", "P", "SZO"];
   
     // A hónap napjainak generálása
     function generateCalendar(year, month) {
         let firstDay = new Date(year, month, 1).getDay(); // Az első nap hétindexe (0 = Vasárnap)
-        firstDay = firstDay === 0 ? 0 : firstDay; // Ha már vasárnappal kezdünk, akkor nincs eltolás
         let daysInMonth = new Date(year, month + 1, 0).getDate();
-
         let prevMonthDays = new Date(year, month, 0).getDate(); // Az előző hónap napjainak száma
         let calendarDays = [];
 
         // **Előző hónap napjai** (Ha szükséges az első sor kitöltéséhez)
-        for (let i = firstDay - 1; i >= 0; i--) {
+        for (let i = 0; i < firstDay; i++) {  
             calendarDays.push({
-            day: prevMonthDays - i,
+            day: prevMonthDays - (firstDay - 1) + i,
             isCurrentMonth: false,
             });
         }
 
         // **Aktuális hónap napjai**
         for (let day = 1; day <= daysInMonth; day++) {
+            let isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
             calendarDays.push({
             day: day,
             isCurrentMonth: true,
+            isToday: isToday
             });
         }
 
         // **Következő hónap napjai** (Kitöltjük a rácsot teljes 6 soros megjelenítésig)
         while (calendarDays.length % 7 !== 0) {
+            let nextDay = calendarDays.length - daysInMonth - firstDay + 1; // Javított számítás
             calendarDays.push({
-            day: calendarDays.length % 7 + 1,
+            day: nextDay,
             isCurrentMonth: false,
             });
         }
 
         return calendarDays;
         }
+
 
   
     // Hónapváltás funkció
@@ -71,15 +73,15 @@
     }
   </script>
 
-    <!-- Navigációs sáv (Most már komponensként) -->
-    <CalendarNav 
-        {currentYear} 
-        {currentMonth} 
-        {monthNames} 
-        {changeMonth} 
-    />
+<!-- Navigációs sáv (Most már komponensként) -->
+<CalendarNav 
+    {currentYear} 
+    {currentMonth} 
+    {monthNames} 
+    {changeMonth} 
+/>
 
-    <!-- Naptár megjelenítés -->
+<!-- Naptár megjelenítés -->
 <div class="calendar-container">
     <div class="calendar-grid">
         {#each generateCalendar($currentYear, $currentMonth) as dayObj, index}
